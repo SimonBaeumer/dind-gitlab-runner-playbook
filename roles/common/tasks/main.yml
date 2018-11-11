@@ -1,0 +1,9 @@
+---
+- name: Install vim
+  yum:
+    name: vim
+    update_cache: true
+
+- name: Install nano
+  yum:
+    name: nano

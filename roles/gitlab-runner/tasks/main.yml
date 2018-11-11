@@ -1,0 +1,42 @@
+---
+- name: Download gitlab-runner binary
+  get_url:
+    url: https://gitlab-runner-downloads.s3.amazonaws.com/latest/binaries/gitlab-runner-linux-amd64
+    dest: /usr/bin/gitlab-runner
+    mode: u=rwx,g=rx,o=rx
+    owner: root
+    group: root
+
+- name: Create group
+  group:
+    name: gitlab-runner
+
+- name: Create user
+  user:
+    name: gitlab-runner
+    create_home: yes
+    groups:
+      - gitlab-runner
+      - docker
+
+- name: Install gitlab-runner
+  shell: "gitlab-runner install --user=gitlab-runner --working-directory=/home/gitlab-runner"
+  ignore_errors: true
+
+- name: start gitlab-runner
+  shell: "gitlab-runner start"
+
+- name: copy register script
+  copy:
+    src: register.sh
+    dest: /usr/bin/register
+    mode: u=rwx,g=rx,o=rx
+
+- name: register runner
+  shell: "register '{{runner_token}}' '{{runner_gitlab_url}}' '{{ runner_name }}'"
+
+- name: set concurrent jobs
+  shell: sed -i -e 's/concurrent = [0-9]/concurrent = {{runner_concurrent}}/g' /etc/gitlab-runner/config.toml
+
+- name: start gitlab-runner
+  shell: "gitlab-runner start"

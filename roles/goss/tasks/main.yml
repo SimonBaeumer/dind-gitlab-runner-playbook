@@ -1,0 +1,38 @@
+---
+- name: Install goss
+  get_url:
+    url: https://github.com/aelsabbahy/goss/releases/download/v0.3.6/goss-linux-amd64
+    dest: /usr/bin/goss
+    mode: u=rwx,g=rx,o=rx
+
+- name: Create goss config directory
+  file:
+    path: /root/goss
+    state: directory
+
+- name: Copy goss file
+  template:
+    src: goss.yml
+    dest: /root/goss/goss.yaml
+
+- name: start gitlab-runner
+  shell: "gitlab-runner start"
+
+- name: Goss validate
+  shell: goss --gossfile=/root/goss/goss.yaml validate
+
+- name: Create goss log directory
+  file:
+    path: /var/log/goss
+    state: directory
+
+- name: Add goss systemd config
+  copy:
+    src: goss.service
+    dest: /etc/systemd/system/goss.service
+
+- name: Start goss healthcheck server
+  systemd:
+    enabled: true
+    name: goss
+    state: restarted

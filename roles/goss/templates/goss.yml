@@ -1,0 +1,24 @@
+package:
+  docker-ce.x86_64:
+    installed: true
+    versions:
+    - 18.06.1.ce
+
+process:
+  gitlab-runner:
+    running: true
+
+command:
+  docker run hello-world:
+    exit-status: 0
+    timeout: 10000
+  "cat /etc/gitlab-runner/config.toml | grep concurrent":
+    exit-status: 0
+    stdout:
+      - "concurrent = {{ runner_concurrent }}"
+
+http:
+  {{ runner_gitlab_url }}:
+    status: 200
+    timeout: 1000
+

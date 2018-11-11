@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+set -e -o errexit -o nounset -o pipefail; shopt -s nullglob
+
+# Start containers
+function dev_start() {
+    vagrant up
+    vagrant provision
+}
+
+function docker_start() {
+    export GITLAB_SSH_AUTHORIZED_KEYS=$(cat ~/.ssh/id_rsa.pub)
+    docker-compose build gitlab-runner
+    docker-compose up -d
+}
+
+function docker_apply() {
+    ansible-playbook -i inventory_docker -vv runner-playbook.yml
+}
+
+# Apply ansible scripts
+function dev_apply() {
+    vagrant provision
+}
+
+# Remove vm
+function dev_rm() {
+    vagrant destroy
+}
+
+# Stop docker containers
+function docker_stop() {
+    docker-compose down
+    echo "Remove known host"
+    ssh-keygen -f "$HOME/.ssh/known_hosts" -R "172.16.2.3"
+}
+
+function dev_stop() {
+    vagrant halt
+}
+
+case $1 in
+    start|apply|rm|stop) dev_"$1" ;;
+    docker_start|docker_apply|docker_stop) $1 ;;
+    *) dev_help "$1" ;;
+esac

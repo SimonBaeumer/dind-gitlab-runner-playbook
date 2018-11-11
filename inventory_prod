@@ -1,0 +1,9 @@
+[runner]
+
+[runner:vars]
+runner_token =
+runner_gitlab_url =
+runner_concurrent = 4
+runner_name = docker-runner
+
+remote_user = root

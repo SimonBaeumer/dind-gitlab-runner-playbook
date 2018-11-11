@@ -1,0 +1,8 @@
+[Unit]
+description = "Goss healthcheck server"
+
+[Service]
+PIDFile=/root/goss/goss.pid
+ExecStart=/usr/bin/goss --gossfile=/root/goss/goss.yaml serve
+ExecReload=kill $(cat /root/goss/goss.pid) && /usr/bin/goss --goss-file=/root/goss/goss.yaml serve
+ExecStop=kill $(cat /root/goss/goss.pid)

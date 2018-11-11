@@ -1,0 +1,10 @@
+[runner]
+192.168.33.10
+
+[runner:vars]
+runner_token =
+runner_gitlab_url =
+runner_concurrent = 1
+runner_name = docker-runner
+
+remote_user = vagrant

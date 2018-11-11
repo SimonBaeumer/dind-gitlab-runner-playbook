@@ -1,0 +1,10 @@
+[runner]
+172.16.2.3
+
+[runner:vars]
+runner_token = "4FY8viRdNk5M7N67KX27"
+runner_gitlab_url = http://172.16.2.2
+runner_concurrent = 4
+runner_name = docker-runner
+
+remote_user = app-admin

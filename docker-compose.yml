@@ -1,0 +1,34 @@
+version: '3.6'
+
+services:
+  gitlab-ce:
+    image: gitlab/gitlab-ce
+    ports:
+      - 8080:80
+      - 8081:443
+    hostname: 172.16.2.2
+    environment:
+      GITLAB_OMNIBUS_CONFIG: "external_url 'http://172.16.2.2/'; gitlab_rails['lfs_enabled'] = true;"
+    networks:
+      gitlab:
+        ipv4_address: 172.16.2.2
+  gitlab-runner:
+    build: ./container
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      SSH_AUTHORIZED_KEYS: "${GITLAB_SSH_AUTHORIZED_KEYS}"
+      SSH_SUDO: "ALL=(ALL) NOPASSWD:ALL"
+    ports:
+      - "2222:22"
+    networks:
+      gitlab:
+        ipv4_address: 172.16.2.3
+
+networks:
+  gitlab:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+      - subnet: 172.16.2.0/24
